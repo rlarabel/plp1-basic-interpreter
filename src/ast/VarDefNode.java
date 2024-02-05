@@ -17,7 +17,7 @@ public class VarDefNode extends ASTNode {
     }
 
     @Override
-    public Object accept(Visitor visitor) throws PLp1Error {
+    public Object accept(Visitor<Object> visitor) throws PLp1Error {
         return visitor.visit(this);
     }
     

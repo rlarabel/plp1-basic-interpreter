@@ -7,22 +7,20 @@ package main;
 import ast.ASTNode;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.antlr.v4.runtime.ANTLRFileStream;
-import org.antlr.v4.runtime.ANTLRInputStream;
+
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import parser.PLp1Lexer;
 
 import parser.PLp1Parser;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import util.PLp1Error;
 import visitor.ASTGenerator;
 import visitor.SourceVisitor;
@@ -48,7 +46,7 @@ public class PLp1 {
 	{
 	    System.out.print( "====> ");
 	    try {
-			processCode(new ANTLRInputStream(getUserInput()));
+			processCode(CharStreams.fromString(getUserInput()));
 		} catch (IOException e) {
 			System.out.println("Error reading input");
 		} catch (Error e) {
@@ -59,7 +57,7 @@ public class PLp1 {
 	    repl();
 	}
 	
-	public static void processCode(ANTLRInputStream code) throws IOException
+	public static void processCode(CharStream code) throws IOException
 	{
             // create a lexer that feeds off of input CharStream
             PLp1Lexer lexer = new PLp1Lexer(code);
@@ -86,7 +84,7 @@ public class PLp1 {
 	public static void main(String args []) throws FileNotFoundException, IOException
 	{
 		if (args.length > 0) {
-			processCode(new ANTLRFileStream(args[0]));			
+			processCode(CharStreams.fromFileName(args[0]));
 		} else {
 			repl();
 		}

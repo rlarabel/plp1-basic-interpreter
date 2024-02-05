@@ -3,8 +3,6 @@
  */
 package ast;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import visitor.Visitor;
@@ -28,7 +26,7 @@ public class ListNode extends ASTNode {
 	 * @see ast.ASTNode#accept(visitor.Visitor)
 	 */
 	@Override
-	public Object accept(Visitor visitor) throws PLp1Error {
+	public Object accept(Visitor<Object> visitor) throws PLp1Error {
 		return visitor.visit(this);
 	}
 

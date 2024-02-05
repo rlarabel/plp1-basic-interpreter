@@ -7,13 +7,9 @@ package visitor;
 import ast.*;
 import ast.ASTNodeBuilderFactory;
 import ast.ASTNodeBuilderFactory.ASTNodeType;
-import java.util.LinkedList;
-import java.util.List;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import parser.PLp1BaseVisitor;
 import parser.PLp1Parser;
 import parser.PLp1Visitor;
 
@@ -26,7 +22,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     private ASTNodeBuilderFactory factory = new ASTNodeBuilderFactory();
 
     @Override
-    public ASTNode visitExpression(@NotNull PLp1Parser.ExpressionContext ctx) {
+    public ASTNode visitExpression(PLp1Parser.ExpressionContext ctx) {
 
         ASTNode node = null;
 
@@ -135,7 +131,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitMethods(@NotNull PLp1Parser.MethodsContext ctx) {
+    public ASTNode visitMethods(PLp1Parser.MethodsContext ctx) {
         ASTNodeBuilder builder = factory.makeASTNodeBuilder(ASTNodeType.METHODLIST);
 
         for (ParseTree t : ctx.children) {
@@ -146,7 +142,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitExpressionList(@NotNull PLp1Parser.ExpressionListContext ctx) {
+    public ASTNode visitExpressionList(PLp1Parser.ExpressionListContext ctx) {
         ASTNodeBuilder builder = factory.makeASTNodeBuilder(ASTNodeType.BODY);
 
         for (ParseTree c : ctx.children) {
@@ -157,7 +153,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitDefaultCase(@NotNull PLp1Parser.DefaultCaseContext ctx) {
+    public ASTNode visitDefaultCase(PLp1Parser.DefaultCaseContext ctx) {
         ASTNodeBuilder builder = factory.makeASTNodeBuilder(ASTNodeType.BODY);
 
         for (int i = 2; i < ctx.getChildCount(); i++) {
@@ -175,7 +171,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitParamList(@NotNull PLp1Parser.ParamListContext ctx) {
+    public ASTNode visitParamList(PLp1Parser.ParamListContext ctx) {
         ASTNodeBuilder plBuilder = factory.makeASTNodeBuilder(ASTNodeType.PARAMETERLIST);
 
         for (TerminalNode t : ctx.ID()) {
@@ -188,7 +184,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitVarRef(@NotNull PLp1Parser.VarRefContext ctx) {
+    public ASTNode visitVarRef(PLp1Parser.VarRefContext ctx) {
 
         ASTNodeBuilder builder = null;
         if (ctx.getChildCount() == 1) {
@@ -211,7 +207,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitFunction(@NotNull PLp1Parser.FunctionContext ctx) {
+    public ASTNode visitFunction(PLp1Parser.FunctionContext ctx) {
         return factory.makeASTNodeBuilder(ASTNodeType.FUNCTIONDEF)
                 .addLabel(ctx.ID().getText())
                 .addChild(ctx.getChild(3).accept(this))
@@ -220,7 +216,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitLetDecl(@NotNull PLp1Parser.LetDeclContext ctx) {
+    public ASTNode visitLetDecl(PLp1Parser.LetDeclContext ctx) {
         ASTNode varDef = factory.makeASTNodeBuilder(ASTNodeType.VARDEF)
                 .addLabel(ctx.ID().getSymbol().getText())
                 .build();
@@ -232,7 +228,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitIfExpr(@NotNull PLp1Parser.IfExprContext ctx) {
+    public ASTNode visitIfExpr(PLp1Parser.IfExprContext ctx) {
         return factory.makeASTNodeBuilder(ASTNodeType.IF)
                 .addChild(ctx.getChild(1).accept(this))
                 .addChild(ctx.getChild(3).accept(this))
@@ -241,7 +237,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitLetExp(@NotNull PLp1Parser.LetExpContext ctx) {
+    public ASTNode visitLetExp(PLp1Parser.LetExpContext ctx) {
         return factory.makeASTNodeBuilder(ASTNodeType.LET)
                 .addChild(ctx.getChild(2).accept(this))
                 .addChild(ctx.getChild(5).accept(this))
@@ -249,7 +245,7 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitCreateExpr(@NotNull PLp1Parser.CreateExprContext ctx) {
+    public ASTNode visitCreateExpr(PLp1Parser.CreateExprContext ctx) {
         return factory.makeASTNodeBuilder(ASTNodeType.CREATE)
                 .addLabel(ctx.ID().getSymbol().getText())
                 .build();

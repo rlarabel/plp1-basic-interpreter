@@ -4,7 +4,6 @@
  */
 package ast;
 
-import java.util.LinkedList;
 import java.util.List;
 import util.PLp1Error;
 import visitor.Visitor;
@@ -23,7 +22,7 @@ public class SwitchCaseListNode extends ASTNode {
     }
 
     @Override
-    public Object accept(Visitor visitor) throws PLp1Error {
+    public Object accept(Visitor<Object> visitor) throws PLp1Error {
         return visitor.visit(this);
     }
     

@@ -19,7 +19,7 @@ public class AssignNode extends ASTNode{
 	/* (non-Javadoc)
 	 * @see ast.ASTNode#accept(visitor.Visitor)
 	 */
-	public Object accept(Visitor v) throws PLp1Error { 
+	public Object accept(Visitor<Object> v) throws PLp1Error { 
 		return v.visit(this); 
 	}
 

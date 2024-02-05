@@ -5,7 +5,6 @@ package ast;
 
 import java.util.LinkedList;
 import java.util.List;
-import org.antlr.v4.runtime.tree.ParseTree;
 import visitor.Visitor;
 import util.PLp1Error;
 
@@ -55,7 +54,7 @@ public abstract class ASTNode {
      *
      * @param visitor - a visitor for an AST
      * @return an Object
-     * @throws PLp1Error TODO
+     * @throws PLp1Error 
      */
-    public abstract Object accept(Visitor visitor) throws PLp1Error;
+    public abstract Object accept(Visitor<Object> visitor) throws PLp1Error;
 }

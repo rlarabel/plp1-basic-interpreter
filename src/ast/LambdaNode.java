@@ -3,8 +3,6 @@
  */
 package ast;
 
-import java.util.ArrayList;
-
 import visitor.Visitor;
 
 import util.PLp1Error;
@@ -37,7 +35,7 @@ public class LambdaNode extends ASTNode {
 	 * @see ast.ASTNode#accept(visitor.Visitor)
 	 */
 	@Override
-	public Object accept(Visitor visitor) throws PLp1Error {
+	public Object accept(Visitor<Object> visitor) throws PLp1Error {
 		return visitor.visit(this);
 	}
 

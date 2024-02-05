@@ -3,13 +3,11 @@
 	<property name = "src.dir" value = "src"/>
 	<property name = "build.dir" value = "classes"/>
 	<property name = "lib.dir" value = "lib"/>
-	<property name = "grammar.src.dir" value="src/grammar"/>
-    <property name = "grammar.file"    value="${grammar.src.dir}/PLp1.g"/>
-
+    <property name = "grammar.file"    value="src/parser/PLp1.g4"/>
 
 	<path id = "master-classpath">
         <pathelement path = "${build.dir}"/>
-		<pathelement path = "${lib.dir}/antlr-4.13.1-complete.jar"/>
+		<pathelement path = "/usr/share/java/antlr4-runtime-4.7.2.jar"/>
 		<pathelement path = "${lib.dir}/junit4.jar"/>
 		<pathelement path = "${lib.dir}/hamcrest2.jar"/>
 	</path>
@@ -41,12 +39,11 @@
 
 	<target name="generate" description="Generates the lexer and parser from the .g grammar file.">
         <echo>Generating the lexer and parser...</echo>
-        <java classname="org.antlr.Tool" fork="true" failonerror="true">
-            <arg value="-fo"/>
-            <arg value="${src.dir}/parser"/>
+        <exec executable="antlr4" failonerror="true">
+            <arg value="-no-listener"/>
+            <arg value="-visitor"/>
             <arg value="${grammar.file}"/>
-            <classpath refid="master-classpath"/>
-        </java>
+        </exec>
 
         <!-- 
             compile the generated parser and lexer source file to see

@@ -53,7 +53,7 @@ import ast.VarDefNode;
  * @author carr
  *
  */
-public class SourceVisitor implements Visitor<String> {
+public class SourceVisitor implements Visitor<Object> {
 
     /**
      *

@@ -8,6 +8,9 @@ all:
 	echo "Generating jar file"
 	ant build-jar
 
+gen:
+	ant generate
+
 build:
 	ant build
 
@@ -19,7 +22,7 @@ unit: all
 		make $$tst; \
 	done
 
-test_%: all
+test_%: all 
 	echo "Running test" $@
 	java -cp plp1.jar:../lib/junit4.jar org.junit.runner.JUnitCore test.$@
 

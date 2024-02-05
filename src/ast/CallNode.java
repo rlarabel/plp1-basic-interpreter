@@ -20,7 +20,7 @@ public class CallNode extends ASTNode {
 	 * @see ast.ASTNode#accept(visitor.Visitor)
 	 */
 	@Override
-	public Object accept(Visitor visitor) throws PLp1Error {
+	public Object accept(Visitor<Object> visitor) throws PLp1Error {
 		return visitor.visit(this);
 	}
 

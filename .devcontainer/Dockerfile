@@ -7,3 +7,4 @@ RUN apt-get -y install python3
 RUN apt-get -y install default-jdk
 RUN apt-get -y install junit4
 RUN apt-get -y install ant
+RUN apt-get -y install antlr4

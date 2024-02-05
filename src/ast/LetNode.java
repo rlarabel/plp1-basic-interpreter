@@ -3,11 +3,8 @@
  */
 package ast;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
 import visitor.Visitor;
 import util.PLp1Error;
 
@@ -75,7 +72,7 @@ public class LetNode extends ASTNode {
 	 * @see ast.ASTNode#accept(patterns.Visitor)
 	 */
 	@Override
-	public Object accept(Visitor visitor) throws PLp1Error {
+	public Object accept(Visitor<Object> visitor) throws PLp1Error {
 		return visitor.visit(this);
 	}
 

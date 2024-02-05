@@ -215,7 +215,7 @@ EXPONENT : ('e' | 'E') ('+' | '-')? DIGIT+
 FLOATNUM : INTNUM '.' DIGIT+ EXPONENT?
          ;
 
-STRING : '\'' ( ~['\''] )* '\''
+STRING : '\'' ( ~[\n\r'])* '\'' 
        ;
 
 NEWLINE : '\r'?'\n' ;

@@ -19,7 +19,7 @@ public class EqualNode extends BinaryNode {
 	 * @see ast.ASTNode#accept(patterns.Visitor)
 	 */
 	@Override
-	public Object accept(Visitor visitor) throws PLp1Error {
+	public Object accept(Visitor<Object> visitor) throws PLp1Error {
 		return visitor.visit(this);
 	}
 
