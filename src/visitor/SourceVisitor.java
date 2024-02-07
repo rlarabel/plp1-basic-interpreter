@@ -12,7 +12,6 @@ import ast.ArgumentListNode;
 import ast.AssignNode;
 import ast.BooleanNode;
 import ast.CallNode;
-import ast.ClassNode;
 import ast.SwitchCaseNode;
 import ast.SwitchNode;
 import ast.FunctionDefinitionNode;
@@ -27,11 +26,7 @@ import ast.IntegerNode;
 import ast.LessEqualNode;
 import ast.LessNode;
 import ast.ListNode;
-import ast.MethodNode;
-import ast.MethodRefNode;
 import ast.MultiplyNode;
-import ast.CreateNode;
-import ast.InstanceVariableListNode;
 import ast.LetDeclListNode;
 import ast.LetDeclNode;
 import ast.NotEqualNode;
@@ -41,7 +36,6 @@ import ast.StringNode;
 import ast.SubNode;
 import ast.VarRefNode;
 import ast.LetNode;
-import ast.MethodListNode;
 import ast.NullNode;
 import ast.ParameterListNode;
 import ast.ParenNode;
@@ -105,21 +99,6 @@ public class SourceVisitor implements Visitor<Object> {
     @Override
     public String visit(CallNode n) throws PLp1Error {
         return (String) n.getFunc().accept(this) + "->(" + n.getArgs().accept(this) + ")";
-    }
-
-    /* (non-Javadoc)
-     * @see visitor.Visitor#visit(ast.ClassNode)
-     */
-    @Override
-    public String visit(ClassNode n) throws PLp1Error {
-       return "class " + (String) n.getName()
-               + "{ \n\t"
-               + n.getClassVars().accept(this)
-               + "\n"
-               + n.getConstructor().accept(this)
-               + "\n"
-               + n.getMethods().accept(this)
-               + "\n}";
     }
 
     /* (non-Javadoc)
@@ -205,30 +184,6 @@ public class SourceVisitor implements Visitor<Object> {
             return "[" + lStr.substring(0, lStr.length() - 2) + "]";
         else
             return "[]";
-    }
-
-    /* (non-Javadoc)
-     * @see visitor.Visitor#visit(ast.MethodNode)
-     */
-    @Override
-    public String visit(MethodNode n) throws PLp1Error {
-        return "method " + n.getName() + "(" + n.getParams().accept(this) + ") {\n" + n.getBody().accept(this) + "\n}";
-    }
-
-    /* (non-Javadoc)
-     * @see visitor.Visitor#visit(ast.MethodRefNode)
-     */
-    @Override
-    public String visit(MethodRefNode n) throws PLp1Error {
-        return n.getObjectName() + "." + n.getMethodName();
-    }
-
-    /* (non-Javadoc)
-     * @see visitor.Visitor#visit(ast.CreateNode)
-     */
-    @Override
-    public String visit(CreateNode n) throws PLp1Error {
-        return "create " + n.getClassName();
     }
 
     /* (non-Javadoc)
@@ -379,28 +334,6 @@ public class SourceVisitor implements Visitor<Object> {
 
         for (ASTNode an : n.getProgram()) {
             source += (an.accept(this) + "\n");
-        }
-
-        return source;
-    }
-
-    @Override
-    public String visit(InstanceVariableListNode n) throws PLp1Error {
-        String source = "";
-
-        for (ASTNode ivn : n.getVars()) {
-            source += (ivn.accept(this) + " ");
-        }
-
-        return source;
-    }
-
-    @Override
-    public String visit(MethodListNode n) throws PLp1Error {
-        String source = "";
-
-        for (ASTNode mn : n.getMethods()) {
-            source += (mn.accept(this) + "\n ");
         }
 
         return source;

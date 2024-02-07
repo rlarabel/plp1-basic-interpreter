@@ -14,7 +14,6 @@ program :
             
 element :
             function            
-            | classDefinition   
             | expression        
         ;
 
@@ -25,26 +24,6 @@ function :
 paramList :
               ( ID (COMMA ID)* )?
           ;
-
-classDefinition :
-                    CLASS ID LB variables init methods RB
-                ;
-
-variables :
-             ( ID )*
-          ;
-
-init :
-         INIT LP paramList RP LB expressionList RB
-     ;
-
-methods :
-            ( method )*
-        ;
-
-method :
-           METHOD ID LP paramList RP LB expressionList RB
-       ;
 
 expressionList :
                    ( expression )+
@@ -66,7 +45,6 @@ expression :
                 | NOT expression                
                 | varRef                        
                 | constantExp                   
-                | createExpr                    
                 | ifExpr                        
                 | lambdaExp                     
                 | assignment                    
@@ -76,9 +54,7 @@ expression :
                 | expression INVOKE LP argumentList RP    
            ;
 
-varRef :
-            ID              
-       |    ID DOT ID       
+varRef : ID              
        ;
 
 constantExp :
@@ -96,9 +72,6 @@ listExp :
          LK (constantExp (COMMA constantExp)*)? RK
      ;
 
-createExpr :
-               CREATE ID
-           ;
 
 ifExpr :
            IF expression THEN expression ELSE expression ENDIF
@@ -146,10 +119,6 @@ argumentList :
                     
  
 FUNCTION    : 'function';
-CLASS       : 'class';
-INIT        : 'init';
-METHOD      : 'method';
-CREATE      : 'create';
 IF          : 'if';
 THEN        : 'then';
 ELSE        : 'else';
@@ -185,7 +154,6 @@ LB          : '{';
 RB          : '}';
 LK          : '[';
 RK          : ']';
-DOT         : '.';
 COMMA       : ',';
 COLON       : ':';
 

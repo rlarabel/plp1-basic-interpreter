@@ -46,7 +46,7 @@ public class PLp1 {
 	{
 	    System.out.print( "====> ");
 	    try {
-			processCode(CharStreams.fromString(getUserInput()));
+			buildAST(CharStreams.fromString(getUserInput()));
 		} catch (IOException e) {
 			System.out.println("Error reading input");
 		} catch (Error e) {
@@ -57,7 +57,7 @@ public class PLp1 {
 	    repl();
 	}
 	
-	public static void processCode(CharStream code) throws IOException
+	private static ASTNode buildAST(CharStream code) throws IOException
 	{
             // create a lexer that feeds off of input CharStream
             PLp1Lexer lexer = new PLp1Lexer(code);
@@ -67,15 +67,22 @@ public class PLp1 {
             PLp1Parser parser = new PLp1Parser(tokens);
             ParseTree t = parser.program();
             
-            ASTNode ast = (ASTNode)t.accept(new ASTGenerator());
-            
-            try {
-                System.out.println(ast.accept(new SourceVisitor()));
-            } catch (PLp1Error ex) {
-                Logger.getLogger(PLp1.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            return (ASTNode)t.accept(new ASTGenerator());
+
 	}
 	
+	private static String interpret(CharStream code) {
+		try {
+			ASTNode root = buildAST(code);
+			return "ANSWER";
+		} catch (IOException e) {
+			return "ERROR";
+		}
+	}
+
+	public static String interpret(String code) {
+		return interpret(CharStreams.fromString(code));
+	}
 
 	/**
 	 * @param args
@@ -84,7 +91,7 @@ public class PLp1 {
 	public static void main(String args []) throws FileNotFoundException, IOException
 	{
 		if (args.length > 0) {
-			processCode(CharStreams.fromFileName(args[0]));
+			System.out.println(interpret(CharStreams.fromFileName(args[0])));
 		} else {
 			repl();
 		}

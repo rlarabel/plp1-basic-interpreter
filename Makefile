@@ -1,4 +1,4 @@
-UNITTESTS = test_basic test_errors
+UNITTESTS = test_all
 
 .SILENT:
 
@@ -24,7 +24,7 @@ unit: all
 
 test_%: all 
 	echo "Running test" $@
-	java -cp plp1.jar:../lib/junit4.jar org.junit.runner.JUnitCore test.$@
+	java -cp plp1.jar:lib/junit4.jar:lib/hamcrest2.jar:/usr/share/java/antlr4-runtime.jar org.junit.runner.JUnitCore test.$@
 
 clean:
 	echo "Cleaning up class files and jar file"

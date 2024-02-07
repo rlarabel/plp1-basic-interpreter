@@ -37,36 +37,6 @@ public interface PLp1Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParamList(PLp1Parser.ParamListContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link PLp1Parser#classDefinition}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitClassDefinition(PLp1Parser.ClassDefinitionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PLp1Parser#variables}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVariables(PLp1Parser.VariablesContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PLp1Parser#init}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitInit(PLp1Parser.InitContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PLp1Parser#methods}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMethods(PLp1Parser.MethodsContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PLp1Parser#method}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMethod(PLp1Parser.MethodContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link PLp1Parser#expressionList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -96,12 +66,6 @@ public interface PLp1Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitListExp(PLp1Parser.ListExpContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PLp1Parser#createExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCreateExpr(PLp1Parser.CreateExprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PLp1Parser#ifExpr}.
 	 * @param ctx the parse tree

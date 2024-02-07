@@ -131,17 +131,6 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitMethods(PLp1Parser.MethodsContext ctx) {
-        ASTNodeBuilder builder = factory.makeASTNodeBuilder(ASTNodeType.METHODLIST);
-
-        for (ParseTree t : ctx.children) {
-            builder.addChild((MethodNode) t.accept(this));
-        }
-
-        return builder.build();
-    }
-
-    @Override
     public ASTNode visitExpressionList(PLp1Parser.ExpressionListContext ctx) {
         ASTNodeBuilder builder = factory.makeASTNodeBuilder(ASTNodeType.BODY);
 
@@ -187,21 +176,8 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     public ASTNode visitVarRef(PLp1Parser.VarRefContext ctx) {
 
         ASTNodeBuilder builder = null;
-        if (ctx.getChildCount() == 1) {
-            builder = factory.makeASTNodeBuilder(ASTNodeType.VARREF)
-                    .addLabel(ctx.ID(0).getText());
-        } else {
-            ASTNode classVarRef = factory.makeASTNodeBuilder(ASTNodeType.VARREF)
-                    .addLabel(ctx.ID(0).getText())
-                    .build();
-            ASTNode methodVarRef = factory.makeASTNodeBuilder(ASTNodeType.VARREF)
-                    .addLabel(ctx.ID(1).getText())
-                    .build();
-
-            builder = factory.makeASTNodeBuilder(ASTNodeType.METHODREF)
-                    .addChild(classVarRef)
-                    .addChild(methodVarRef);
-        }
+        builder = factory.makeASTNodeBuilder(ASTNodeType.VARREF)
+                    .addLabel(ctx.ID().getText());
 
         return builder.build();
     }
@@ -240,24 +216,6 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     public ASTNode visitLetExp(PLp1Parser.LetExpContext ctx) {
         return factory.makeASTNodeBuilder(ASTNodeType.LET)
                 .addChild(ctx.getChild(2).accept(this))
-                .addChild(ctx.getChild(5).accept(this))
-                .build();
-    }
-
-    @Override
-    public ASTNode visitCreateExpr(PLp1Parser.CreateExprContext ctx) {
-        return factory.makeASTNodeBuilder(ASTNodeType.CREATE)
-                .addLabel(ctx.ID().getSymbol().getText())
-                .build();
-    }
-
-    @Override
-    public ASTNode visitClassDefinition(PLp1Parser.ClassDefinitionContext ctx) {
-
-        return factory.makeASTNodeBuilder(ASTNodeType.CLASS)
-                .addLabel(ctx.ID().getText())
-                .addChild(ctx.getChild(3).accept(this))
-                .addChild(ctx.getChild(4).accept(this))
                 .addChild(ctx.getChild(5).accept(this))
                 .build();
     }
@@ -309,33 +267,11 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
     }
 
     @Override
-    public ASTNode visitInit(PLp1Parser.InitContext ctx) {
-        return factory.makeASTNodeBuilder(ASTNodeType.METHOD)
-                .addLabel("init")
-                .addChild(ctx.getChild(2).accept(this))
-                .addChild(ctx.getChild(5).accept(this))
-                .build();
-    }
-
-    @Override
     public ASTNode visitArgumentList(PLp1Parser.ArgumentListContext ctx) {
         ASTNodeBuilder builder = factory.makeASTNodeBuilder(ASTNodeType.ARGUMENTLIST);
 
         for (int i = 0; i < ctx.getChildCount(); i += 2) {
             builder.addChild(ctx.getChild(i).accept(this));
-        }
-
-        return builder.build();
-    }
-
-    @Override
-    public ASTNode visitVariables(PLp1Parser.VariablesContext ctx) {
-        ASTNodeBuilder builder = factory.makeASTNodeBuilder(ASTNodeType.INSTANCEVARLIST);
-
-        for (TerminalNode t : ctx.ID()) {
-            builder.addChild(factory.makeASTNodeBuilder(ASTNodeType.VARDEF)
-                    .addLabel(t.getText())
-                    .build());
         }
 
         return builder.build();
@@ -401,15 +337,6 @@ public class ASTGenerator extends AbstractParseTreeVisitor<ASTNode> implements P
             n = ctx.getChild(0).accept(this);
         }
         return n;
-    }
-
-    @Override
-    public ASTNode visitMethod(PLp1Parser.MethodContext ctx) {
-        return factory.makeASTNodeBuilder(ASTNodeType.METHOD)
-                .addLabel(ctx.ID().getText())
-                .addChild(ctx.getChild(3).accept(this))
-                .addChild(ctx.getChild(6).accept(this))
-                .build();
     }
 
     @Override

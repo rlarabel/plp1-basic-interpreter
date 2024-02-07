@@ -39,12 +39,6 @@ public class ASTNodeBuilder {
                 case CALL:
                     node = new CallNode();
                     break;
-                case CLASS:
-                    node = new ClassNode();
-                    break;
-                case CREATE:
-                    node = new CreateNode();
-                    break;
                 case DIVIDE:
                     node = new DivideNode();
                     break;
@@ -65,9 +59,6 @@ public class ASTNodeBuilder {
                     break;
                 case IF:
                     node = new IfNode();
-                    break;
-                case INSTANCEVARLIST:
-                    node = new InstanceVariableListNode();
                     break;
                 case INTEGER:
                     node = new IntegerNode();
@@ -92,15 +83,6 @@ public class ASTNodeBuilder {
                     break;
                 case LIST:
                     node = new ListNode();
-                    break;
-                case METHODLIST:
-                    node = new MethodListNode();
-                    break;
-                case METHOD:
-                    node = new MethodNode();
-                    break;
-                case METHODREF:
-                    node = new MethodRefNode();
                     break;
                 case MULTIPLY:
                     node = new MultiplyNode();

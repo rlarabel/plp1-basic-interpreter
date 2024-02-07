@@ -1,6 +1,6 @@
 {
     "java.project.referencedLibraries": [
-       "../lib/*.jar" ,
+       "lib/*.jar" ,
        "/usr/share/java/antlr4-runtime.jar"
     ]
 }
