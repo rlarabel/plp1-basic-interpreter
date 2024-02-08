@@ -17,9 +17,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import parser.PLp1Lexer;
 
 import parser.PLp1Parser;
-
 import visitor.ASTGenerator;
-
 
 /**
  *
@@ -69,9 +67,9 @@ public class PLp1 {
 	private static String interpret(CharStream code) {
 		try {
 			ASTNode root = buildAST(code);
-			return "ANSWER";
+			return "VALUE";
 		} catch (IOException e) {
-			return "ERROR";
+			return "Runtime Error";
 		}
 	}
 
@@ -85,8 +83,9 @@ public class PLp1 {
 	 */
 	public static void main(String args []) throws FileNotFoundException, IOException
 	{
+		String code = String.join(" ",args);
 		if (args.length > 0) {
-			System.out.println(interpret(CharStreams.fromFileName(args[0])));
+			System.out.println(interpret(code));
 		} else {
 			repl();
 		}
