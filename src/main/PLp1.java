@@ -2,6 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+// java -cp plp1.jar:lib/junit4.jar:lib/hamcrest2.jar:/usr/share/java/antlr4-runtime.jar main.PLp1 "false"
 package main;
 
 import ast.ASTNode;
@@ -18,6 +19,9 @@ import parser.PLp1Lexer;
 
 import parser.PLp1Parser;
 import visitor.ASTGenerator;
+import visitor.EvalVisitor;
+import util.PLp1Error;
+
 
 /**
  *
@@ -66,9 +70,15 @@ public class PLp1 {
 	
 	private static String interpret(CharStream code) {
 		try {
+			System.out.println(code);
 			ASTNode root = buildAST(code);
-			return "VALUE";
+			System.out.println(root.getLabel());
+			EvalVisitor ev = new EvalVisitor();
+			System.out.println(root.accept(ev));
+			return root.accept(ev).toString();
 		} catch (IOException e) {
+			return "Error";
+		} catch (PLp1Error e) {
 			return "Runtime Error";
 		}
 	}

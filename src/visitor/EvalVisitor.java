@@ -40,6 +40,9 @@ import ast.VarDefNode;
 import ast.VarRefNode;
 import util.PLp1Error;
 import util.Value;
+import util.BooleanValue;
+import util.IntValue;
+import util.FloatValue;
 
 public class EvalVisitor implements Visitor<Object> {
 
@@ -63,8 +66,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(BooleanNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        return (new BooleanValue()).addValue(n.getVal()); 
+        //throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
     @Override

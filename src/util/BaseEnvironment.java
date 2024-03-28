@@ -79,6 +79,8 @@ public class BaseEnvironment extends Environment {
         baseVals.add(factory.makeValue(ValueFactory.ValueType.BOOL).addValue(false));
         baseVars.add("nil");
         baseVals.add(factory.makeValue(ValueFactory.ValueType.NULL));
+        baseVars.add("int");
+        baseVals.add(factory.makeValue(ValueFactory.ValueType.INT));
 
 
         addToMap(baseVars, baseVals);
