@@ -57,6 +57,20 @@ public class BaseEnvironment extends Environment {
         }
     }
 
+    static class Rest extends BuiltinFunction {
+
+        @Override
+        public Value invoke(Environment env, List<Value> args) throws PLp1Error {
+            // TODO
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        
+        @Override
+        public Value addValue(Object val) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+
 
 
     public BaseEnvironment() {
@@ -71,7 +85,9 @@ public class BaseEnvironment extends Environment {
 
         baseVars.add("numberp");
         baseVals.add(new IsNumber());
-
+        
+        baseVars.add("rest");
+        baseVals.add(new Rest());
         
         baseVars.add("true");
         baseVals.add(factory.makeValue(ValueFactory.ValueType.BOOL).addValue(true));
