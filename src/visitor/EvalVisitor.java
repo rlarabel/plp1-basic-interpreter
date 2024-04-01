@@ -66,7 +66,11 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(BooleanNode n) throws PLp1Error {
-        return (new BooleanValue()).addValue(n.getVal()); 
+        BooleanValue boolVal = new BooleanValue();
+        boolean bool = n.getVal();
+        boolVal.addValue(bool);
+        System.out.println("Boolean Value: " + boolVal.toString());
+        return boolVal; 
         //throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 

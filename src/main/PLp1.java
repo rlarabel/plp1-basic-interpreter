@@ -70,11 +70,8 @@ public class PLp1 {
 	
 	private static String interpret(CharStream code) {
 		try {
-			System.out.println(code);
 			ASTNode root = buildAST(code);
-			System.out.println(root.getLabel());
 			EvalVisitor ev = new EvalVisitor();
-			System.out.println(root.accept(ev));
 			return root.accept(ev).toString();
 		} catch (IOException e) {
 			return "Error";
