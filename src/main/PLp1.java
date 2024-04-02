@@ -20,6 +20,7 @@ import parser.PLp1Lexer;
 import parser.PLp1Parser;
 import visitor.ASTGenerator;
 import visitor.EvalVisitor;
+import util.ListValue;
 import util.PLp1Error;
 
 
@@ -43,7 +44,7 @@ public class PLp1 {
 	{
 	    System.out.print( "====> ");
 	    try {
-			interpret(CharStreams.fromString(getUserInput()));
+			System.out.println(interpret(CharStreams.fromString(getUserInput())));
 		} catch (IOException e) {
 			System.out.println("Error reading input");
 		} catch (Error e) {
@@ -76,7 +77,7 @@ public class PLp1 {
 		} catch (IOException e) {
 			return "Error";
 		} catch (PLp1Error e) {
-			return "Runtime Error";
+			return "Runtime Error: " + e;
 		}
 	}
 
