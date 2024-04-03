@@ -57,8 +57,18 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(AssignNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Object id = n.getLhs();
+        Object exp = n.getRhs().accept(this);
+        if(id instanceof FloatValue && exp instanceof FloatValue)
+            return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() * ((FloatValue) rightOp).getFloat()); 
+        else if (id instanceof IntValue && exp instanceof IntValue) 
+            return (new IntValue()).addValue(((IntValue) leftOp).getInt() * ((IntValue) rightOp).getInt());
+        else if (id instanceof IntValue && exp instanceof FloatValue) 
+            return (new FloatValue()).addValue(((float) ((IntValue) leftOp).getInt()) * ((FloatValue) rightOp).getFloat());
+        else if (id instanceof FloatValue && exp instanceof IntValue) 
+            return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() * ((float) ((IntValue) rightOp).getInt())); 
+        else 
+            throw new PLp1Error("Could not multiply operands: incompatible types");
     }
 
     @Override
@@ -164,9 +174,13 @@ public class EvalVisitor implements Visitor<Object> {
         if(leftOp instanceof FloatValue && rightOp instanceof FloatValue)
             return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() + ((FloatValue) rightOp).getFloat()); 
         else if (leftOp instanceof IntValue && rightOp instanceof IntValue) 
-            return (new IntValue()).addValue(((IntValue) leftOp).getInt() + ((IntValue) rightOp).getInt()); 
+            return (new IntValue()).addValue(((IntValue) leftOp).getInt() + ((IntValue) rightOp).getInt());
+        else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+            return (new FloatValue()).addValue(((float) ((IntValue) leftOp).getInt()) + ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+            return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() + ((float) ((IntValue) rightOp).getInt()));
         else 
-            throw new PLp1Error("Could not add operands");
+            throw new PLp1Error("Could not add operands: incompatible types");
     }
 
     @Override
@@ -177,9 +191,13 @@ public class EvalVisitor implements Visitor<Object> {
         if(leftOp instanceof FloatValue && rightOp instanceof FloatValue)
             return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() - ((FloatValue) rightOp).getFloat()); 
         else if (leftOp instanceof IntValue && rightOp instanceof IntValue) 
-            return (new IntValue()).addValue(((IntValue) leftOp).getInt() - ((IntValue) rightOp).getInt()); 
+            return (new IntValue()).addValue(((IntValue) leftOp).getInt() - ((IntValue) rightOp).getInt());
+        else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+            return (new FloatValue()).addValue(((float) ((IntValue) leftOp).getInt()) - ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+            return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() - ((float) ((IntValue) rightOp).getInt()));
         else 
-            throw new PLp1Error("Could not subtract operands");
+            throw new PLp1Error("Could not subtract operands: incompatible types");
     }
 
     @Override
@@ -190,83 +208,183 @@ public class EvalVisitor implements Visitor<Object> {
         if(leftOp instanceof FloatValue && rightOp instanceof FloatValue)
             return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() * ((FloatValue) rightOp).getFloat()); 
         else if (leftOp instanceof IntValue && rightOp instanceof IntValue) 
-            return (new IntValue()).addValue(((IntValue) leftOp).getInt() * ((IntValue) rightOp).getInt()); 
+            return (new IntValue()).addValue(((IntValue) leftOp).getInt() * ((IntValue) rightOp).getInt());
+        else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+            return (new FloatValue()).addValue(((float) ((IntValue) leftOp).getInt()) * ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+            return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() * ((float) ((IntValue) rightOp).getInt())); 
         else 
-            throw new PLp1Error("Could not multiply operands");
+            throw new PLp1Error("Could not multiply operands: incompatible types");
     }
 
     @Override
     public Value visit(DivideNode n) throws PLp1Error {
         Object leftOp = n.getLeftOperand().accept(this); 
         Object rightOp = n.getRightOperand().accept(this);
-
-        if(leftOp instanceof FloatValue && rightOp instanceof FloatValue)
-            return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() / ((FloatValue) rightOp).getFloat()); 
-        else if (leftOp instanceof IntValue && rightOp instanceof IntValue) 
-            return (new IntValue()).addValue(((IntValue) leftOp).getInt() / ((IntValue) rightOp).getInt()); 
-        else 
-            throw new PLp1Error("Could not divide operands");
+        try{
+            if(leftOp instanceof FloatValue && rightOp instanceof FloatValue)
+                return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() / ((FloatValue) rightOp).getFloat()); 
+            else if (leftOp instanceof IntValue && rightOp instanceof IntValue) 
+                return (new IntValue()).addValue(((IntValue) leftOp).getInt() / ((IntValue) rightOp).getInt()); 
+            else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+                return (new FloatValue()).addValue(((float) ((IntValue) leftOp).getInt()) / ((FloatValue) rightOp).getFloat());
+            else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+                return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() / ((float) ((IntValue) rightOp).getInt()));
+            else 
+                throw new PLp1Error("Could not divide operands: incompatible types");
+        } catch(ArithmeticException e) {
+            throw new PLp1Error(e);
+        }
     }
 
     @Override
     public Value visit(NotNode n) throws PLp1Error {
-        ASTNode operandNode = n.getOperand();
-        Object operandVal = operandNode.accept(this);
+        Object operandVal = n.getOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(operandVal instanceof BooleanValue){
             result.addValue(! ((BooleanValue) operandVal).getBoolean());
             return result;
         } else {
-            throw new PLp1Error("! operand must be given a BooleanValue type");
+            throw new PLp1Error("! operand must be a BooleanValue type");
         }
     }
 
     @Override
     public Value visit(OrNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Object rightOp = n.getRightOperand().accept(this);
+        Object leftOp = n.getLeftOperand().accept(this);
+        BooleanValue result = new BooleanValue();
+        if(rightOp instanceof BooleanValue && leftOp instanceof BooleanValue){
+            result.addValue(((BooleanValue) leftOp).getBoolean() || ((BooleanValue) rightOp).getBoolean());
+            return result;
+        } else {
+            throw new PLp1Error("|| operands must be a BooleanValue types");
+        }
     }
 
     @Override
     public Value visit(AndNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Object rightOp = n.getRightOperand().accept(this);
+        Object leftOp = n.getLeftOperand().accept(this);
+        BooleanValue result = new BooleanValue();
+        if(rightOp instanceof BooleanValue && leftOp instanceof BooleanValue){
+            result.addValue(((BooleanValue) leftOp).getBoolean() && ((BooleanValue) rightOp).getBoolean());
+            return result;
+        } else {
+            throw new PLp1Error("&& operands must be a BooleanValue types");
+        }
     }
 
     @Override
     public Value visit(EqualNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Object rightOp = n.getRightOperand().accept(this);
+        Object leftOp = n.getLeftOperand().accept(this);
+        BooleanValue result = new BooleanValue();
+        if(rightOp instanceof BooleanValue && leftOp instanceof BooleanValue)
+            result.addValue(((BooleanValue) leftOp).getBoolean() == ((BooleanValue) rightOp).getBoolean());
+        else if(rightOp instanceof IntValue && leftOp instanceof IntValue)
+            result.addValue(((IntValue) leftOp).getInt() == ((IntValue) rightOp).getInt());
+        else if(rightOp instanceof FloatValue && leftOp instanceof FloatValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() == ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+            result.addValue(((float) ((IntValue) leftOp).getInt()) == ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() == ((float) ((IntValue) rightOp).getInt()));
+        else 
+            throw new PLp1Error("Could not perform == on operands: incompatible types");
+        return result;
     }
 
     @Override
     public Value visit(NotEqualNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Object rightOp = n.getRightOperand().accept(this);
+        Object leftOp = n.getLeftOperand().accept(this);
+        BooleanValue result = new BooleanValue();
+        if(rightOp instanceof BooleanValue && leftOp instanceof BooleanValue)
+            result.addValue(((BooleanValue) leftOp).getBoolean() != ((BooleanValue) rightOp).getBoolean());
+        else if(rightOp instanceof IntValue && leftOp instanceof IntValue)
+            result.addValue(((IntValue) leftOp).getInt() != ((IntValue) rightOp).getInt());
+        else if(rightOp instanceof FloatValue && leftOp instanceof FloatValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() != ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+            result.addValue(((float) ((IntValue) leftOp).getInt()) != ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() != ((float) ((IntValue) rightOp).getInt()));
+        else 
+            throw new PLp1Error("Could not perform != on operands: incompatible types");
+        return result;
     }
 
     @Override
     public Value visit(LessNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Object rightOp = n.getRightOperand().accept(this);
+        Object leftOp = n.getLeftOperand().accept(this);
+        BooleanValue result = new BooleanValue();
+        if(rightOp instanceof IntValue && leftOp instanceof IntValue)
+            result.addValue(((IntValue) leftOp).getInt() < ((IntValue) rightOp).getInt());
+        else if(rightOp instanceof FloatValue && leftOp instanceof FloatValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() < ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+            result.addValue(((float) ((IntValue) leftOp).getInt()) < ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() < ((float) ((IntValue) rightOp).getInt()));
+        else 
+            throw new PLp1Error("Could not perform < on operands: incompatible types");
+        return result;
     }
 
     @Override
     public Value visit(LessEqualNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Object rightOp = n.getRightOperand().accept(this);
+        Object leftOp = n.getLeftOperand().accept(this);
+        BooleanValue result = new BooleanValue();
+        if(rightOp instanceof IntValue && leftOp instanceof IntValue)
+            result.addValue(((IntValue) leftOp).getInt() <= ((IntValue) rightOp).getInt());
+        else if(rightOp instanceof FloatValue && leftOp instanceof FloatValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() <= ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+            result.addValue(((float) ((IntValue) leftOp).getInt()) <= ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() <= ((float) ((IntValue) rightOp).getInt()));
+        else 
+            throw new PLp1Error("Could not perform <= on operands: incompatible types");
+        return result;
     }
 
     @Override
     public Value visit(GreaterNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Object rightOp = n.getRightOperand().accept(this);
+        Object leftOp = n.getLeftOperand().accept(this);
+        BooleanValue result = new BooleanValue();
+        if(rightOp instanceof IntValue && leftOp instanceof IntValue)
+            result.addValue(((IntValue) leftOp).getInt() > ((IntValue) rightOp).getInt());
+        else if(rightOp instanceof FloatValue && leftOp instanceof FloatValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() > ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+            result.addValue(((float) ((IntValue) leftOp).getInt()) > ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() > ((float) ((IntValue) rightOp).getInt()));
+        else 
+            throw new PLp1Error("Could not perform > on operands: incompatible types");
+        return result;
     }
 
     @Override
     public Value visit(GreaterEqualNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Object rightOp = n.getRightOperand().accept(this);
+        Object leftOp = n.getLeftOperand().accept(this);
+        BooleanValue result = new BooleanValue();
+        if(rightOp instanceof IntValue && leftOp instanceof IntValue)
+            result.addValue(((IntValue) leftOp).getInt() >= ((IntValue) rightOp).getInt());
+        else if(rightOp instanceof FloatValue && leftOp instanceof FloatValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() >= ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof IntValue && rightOp instanceof FloatValue) 
+            result.addValue(((float) ((IntValue) leftOp).getInt()) >= ((FloatValue) rightOp).getFloat());
+        else if (leftOp instanceof FloatValue && rightOp instanceof IntValue) 
+            result.addValue(((FloatValue) leftOp).getFloat() >= ((float) ((IntValue) rightOp).getInt()));
+        else 
+            throw new PLp1Error("Could not perform >= on operands: incompatible types");
+        return result;
     }
 
     @Override
