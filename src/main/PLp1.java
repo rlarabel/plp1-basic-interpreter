@@ -20,7 +20,6 @@ import parser.PLp1Lexer;
 import parser.PLp1Parser;
 import visitor.ASTGenerator;
 import visitor.EvalVisitor;
-import util.ListValue;
 import util.PLp1Error;
 
 

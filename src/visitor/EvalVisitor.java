@@ -1,5 +1,8 @@
 package visitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ast.ASTNode;
 import ast.AddNode;
 import ast.AndNode;
@@ -39,9 +42,12 @@ import ast.SwitchNode;
 import ast.VarDefNode;
 import ast.VarRefNode;
 import util.PLp1Error;
+import util.BaseEnvironment;
+import util.Environment;
 import util.StringValue;
 import util.Value;
 import util.BooleanValue;
+import util.BuiltinFunction;
 import util.IntValue;
 import util.FloatValue;
 import util.ListValue;
@@ -49,32 +55,46 @@ import util.NullValue;
 
 public class EvalVisitor implements Visitor<Object> {
 
+    public Environment baseEnv = new BaseEnvironment();
+
     @Override
-    public Value visit(ArgumentListNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+    public List<Value> visit(ArgumentListNode n) throws PLp1Error {
+        List<Value> source = new ArrayList<Value>();
+        for (ASTNode node : n.getArguments()) {
+            source.add((Value) node.accept(this));
+        }
+        return source;
     }
 
     @Override
     public Value visit(AssignNode n) throws PLp1Error {
-        Object id = n.getLhs();
-        Object exp = n.getRhs().accept(this);
-        if(id instanceof FloatValue && exp instanceof FloatValue)
-            return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() * ((FloatValue) rightOp).getFloat()); 
-        else if (id instanceof IntValue && exp instanceof IntValue) 
-            return (new IntValue()).addValue(((IntValue) leftOp).getInt() * ((IntValue) rightOp).getInt());
-        else if (id instanceof IntValue && exp instanceof FloatValue) 
-            return (new FloatValue()).addValue(((float) ((IntValue) leftOp).getInt()) * ((FloatValue) rightOp).getFloat());
-        else if (id instanceof FloatValue && exp instanceof IntValue) 
-            return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() * ((float) ((IntValue) rightOp).getInt())); 
+        Value exp = (Value) n.getRhs().accept(this);
+        if(exp instanceof FloatValue)
+            return baseEnv.put(n.getLhs(), new FloatValue().addValue(((FloatValue) exp).getFloat()));  
+        else if (exp instanceof IntValue) 
+            return baseEnv.put(n.getLhs(), new IntValue().addValue(((IntValue) exp).getInt()));  
+        else if (exp instanceof BooleanValue) 
+            return baseEnv.put(n.getLhs(), new BooleanValue().addValue(((BooleanValue) exp).getBoolean()));  
+        else if (exp instanceof ListValue) 
+            return baseEnv.put(n.getLhs(), new ListValue().addValue(((ListValue) exp).toString())); 
+        else if (exp instanceof StringValue) 
+            return baseEnv.put(n.getLhs(), new StringValue().addValue(((StringValue) exp).toString())); 
         else 
-            throw new PLp1Error("Could not multiply operands: incompatible types");
+            throw new PLp1Error("Could not assign the type to a id");
     }
 
     @Override
     public Value visit(BodyNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        if(n.getBody().size() == 1)
+            return((Value) n.getBody().get(0).accept(this));
+        else  if(n.getBody().size() > 1){
+            ListValue source = new ListValue();
+            for (ASTNode node : n.getBody()) {
+                source.addValue((Value) node.accept(this));
+            }
+            return source;
+        } else
+            throw new PLp1Error("No expressions given");
     }
 
     @Override
@@ -87,20 +107,29 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(CallNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        @SuppressWarnings("unchecked")
+        List<Value> argList = (List<Value>) n.getArgs().accept(this);
+        Value fVal = (Value) n.getFunc().accept(this);
+        if(fVal instanceof BuiltinFunction)
+            return (Value) ((BuiltinFunction) fVal).invoke(baseEnv, argList);
+        else   
+            throw new PLp1Error("Called a non-function");
     }
 
     @Override
     public Value visit(SwitchCaseNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        if(((BooleanValue) n.getTestExpr().accept(this)).getBoolean()) 
+            return (Value) n.getResultExpr().accept(this);
+        else
+            return null;
     }
 
     @Override
     public Value visit(SwitchNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Value result = (Value) n.getCases().accept(this);
+        if (result != null)
+            return result;
+        return (Value) n.getDefaultCase().accept(this);
     }
 
     @Override
@@ -125,8 +154,11 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(IfNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        BooleanValue testExp = (BooleanValue) n.getTestExpr().accept(this);
+        if (testExp.getBoolean())
+            return (Value) n.getThenExpr().accept(this);
+        else
+            return (Value) n.getElseExpr().accept(this);
     }
 
     @Override
@@ -156,8 +188,7 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(VarRefNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        return baseEnv.get(n.getId());
     }
 
     @Override
@@ -168,8 +199,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(AddNode n) throws PLp1Error {
-        Object leftOp = n.getLeftOperand().accept(this); 
-        Object rightOp = n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this); 
+        Value rightOp = (Value) n.getRightOperand().accept(this);
 
         if(leftOp instanceof FloatValue && rightOp instanceof FloatValue)
             return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() + ((FloatValue) rightOp).getFloat()); 
@@ -185,8 +216,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(SubNode n) throws PLp1Error {
-        Object leftOp = n.getLeftOperand().accept(this); 
-        Object rightOp = n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this); 
+        Value rightOp = (Value) n.getRightOperand().accept(this);
 
         if(leftOp instanceof FloatValue && rightOp instanceof FloatValue)
             return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() - ((FloatValue) rightOp).getFloat()); 
@@ -202,8 +233,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(MultiplyNode n) throws PLp1Error {
-        Object leftOp = n.getLeftOperand().accept(this); 
-        Object rightOp = n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this); 
+        Value rightOp = (Value) n.getRightOperand().accept(this);
 
         if(leftOp instanceof FloatValue && rightOp instanceof FloatValue)
             return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() * ((FloatValue) rightOp).getFloat()); 
@@ -219,8 +250,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(DivideNode n) throws PLp1Error {
-        Object leftOp = n.getLeftOperand().accept(this); 
-        Object rightOp = n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this); 
+        Value rightOp = (Value) n.getRightOperand().accept(this);
         try{
             if(leftOp instanceof FloatValue && rightOp instanceof FloatValue)
                 return (new FloatValue()).addValue(((FloatValue) leftOp).getFloat() / ((FloatValue) rightOp).getFloat()); 
@@ -239,7 +270,7 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(NotNode n) throws PLp1Error {
-        Object operandVal = n.getOperand().accept(this);
+        Value operandVal = (Value) n.getOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(operandVal instanceof BooleanValue){
             result.addValue(! ((BooleanValue) operandVal).getBoolean());
@@ -251,8 +282,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(OrNode n) throws PLp1Error {
-        Object rightOp = n.getRightOperand().accept(this);
-        Object leftOp = n.getLeftOperand().accept(this);
+        Value rightOp = (Value) n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(rightOp instanceof BooleanValue && leftOp instanceof BooleanValue){
             result.addValue(((BooleanValue) leftOp).getBoolean() || ((BooleanValue) rightOp).getBoolean());
@@ -264,8 +295,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(AndNode n) throws PLp1Error {
-        Object rightOp = n.getRightOperand().accept(this);
-        Object leftOp = n.getLeftOperand().accept(this);
+        Value rightOp = (Value) n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(rightOp instanceof BooleanValue && leftOp instanceof BooleanValue){
             result.addValue(((BooleanValue) leftOp).getBoolean() && ((BooleanValue) rightOp).getBoolean());
@@ -277,8 +308,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(EqualNode n) throws PLp1Error {
-        Object rightOp = n.getRightOperand().accept(this);
-        Object leftOp = n.getLeftOperand().accept(this);
+        Value rightOp = (Value) n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(rightOp instanceof BooleanValue && leftOp instanceof BooleanValue)
             result.addValue(((BooleanValue) leftOp).getBoolean() == ((BooleanValue) rightOp).getBoolean());
@@ -297,8 +328,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(NotEqualNode n) throws PLp1Error {
-        Object rightOp = n.getRightOperand().accept(this);
-        Object leftOp = n.getLeftOperand().accept(this);
+        Value rightOp = (Value) n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(rightOp instanceof BooleanValue && leftOp instanceof BooleanValue)
             result.addValue(((BooleanValue) leftOp).getBoolean() != ((BooleanValue) rightOp).getBoolean());
@@ -317,8 +348,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(LessNode n) throws PLp1Error {
-        Object rightOp = n.getRightOperand().accept(this);
-        Object leftOp = n.getLeftOperand().accept(this);
+        Value rightOp = (Value) n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(rightOp instanceof IntValue && leftOp instanceof IntValue)
             result.addValue(((IntValue) leftOp).getInt() < ((IntValue) rightOp).getInt());
@@ -335,8 +366,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(LessEqualNode n) throws PLp1Error {
-        Object rightOp = n.getRightOperand().accept(this);
-        Object leftOp = n.getLeftOperand().accept(this);
+        Value rightOp = (Value) n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(rightOp instanceof IntValue && leftOp instanceof IntValue)
             result.addValue(((IntValue) leftOp).getInt() <= ((IntValue) rightOp).getInt());
@@ -353,8 +384,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(GreaterNode n) throws PLp1Error {
-        Object rightOp = n.getRightOperand().accept(this);
-        Object leftOp = n.getLeftOperand().accept(this);
+        Value rightOp = (Value) n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(rightOp instanceof IntValue && leftOp instanceof IntValue)
             result.addValue(((IntValue) leftOp).getInt() > ((IntValue) rightOp).getInt());
@@ -371,8 +402,8 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(GreaterEqualNode n) throws PLp1Error {
-        Object rightOp = n.getRightOperand().accept(this);
-        Object leftOp = n.getLeftOperand().accept(this);
+        Value rightOp = (Value) n.getRightOperand().accept(this);
+        Value leftOp = (Value) n.getLeftOperand().accept(this);
         BooleanValue result = new BooleanValue();
         if(rightOp instanceof IntValue && leftOp instanceof IntValue)
             result.addValue(((IntValue) leftOp).getInt() >= ((IntValue) rightOp).getInt());
@@ -413,8 +444,13 @@ public class EvalVisitor implements Visitor<Object> {
 
     @Override
     public Value visit(SwitchCaseListNode n) throws PLp1Error {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        Value source = null;
+        for (ASTNode scn : n.getSwitchCases()) {
+            source = (Value) scn.accept(this);
+            if(source != null)
+                return source;
+        }
+        return null;
     }
 
     @Override
