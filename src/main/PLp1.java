@@ -76,7 +76,7 @@ public class PLp1 {
 		} catch (IOException e) {
 			return "Error";
 		} catch (PLp1Error e) {
-			return "Runtime Error: " + e;
+			return "Runtime Error";
 		}
 	}
 

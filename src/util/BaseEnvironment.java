@@ -63,7 +63,10 @@ public class BaseEnvironment extends Environment {
             Value L = args.get(0);
             
             if (L instanceof ListValue) {
-                return ((ListValue) L).first();
+                if(((ListValue) L).length() > 0)
+                    return ((ListValue) L).first();
+                else
+                    throw new PLp1Error();
             } else 
                 throw new PLp1Error("Applied first to non-list");
         }
@@ -79,9 +82,11 @@ public class BaseEnvironment extends Environment {
         @Override
         public Value invoke(Environment env, List<Value> args) throws PLp1Error {
             Value L = args.get(0);
-            
             if (L instanceof ListValue) {
-                return ((ListValue) L).rest();
+                if(((ListValue) L).length() > 0)
+                    return ((ListValue) L).rest();
+                else
+                    throw new PLp1Error();
             } else 
                 throw new PLp1Error("Applied rest to non-list");
         }
